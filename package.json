@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@types/react-router-dom": "^5.3.3",
+    "axios": "^1.7.9",
+    "react-router-dom": "^7.0.2",
+    "typescript": "^5.7.2",
+    "web-vitals": "^4.2.4"
+  }
+}
