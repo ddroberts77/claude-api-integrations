@@ -1,23 +1,21 @@
 # Claude API Integrations
 
-This repository contains various integrations and tools for working with Claude's API, including Firebase integration, job assistance applications, and various extensions.
+A comprehensive toolkit for integrating Claude's AI capabilities into your applications. This monorepo contains various integrations and tools for working with Claude's API.
 
-## Project Structure
+## 🚀 Features
 
-- `firebase_integration.py`: Firebase integration module for Claude API
-- `job-assist-app/`: Job assistance application using Claude API
-- `extensions/`: Various Claude API extensions and utilities
+- 🔥 **Firebase Integration**: Store and manage Claude API responses in Firebase
+- 💼 **Job Assistant**: AI-powered job application and career tools
+- 🧰 **Extensions**: Various utilities and helpers for Claude API
 
-## Getting Started
+## 📋 Prerequisites
 
-### Prerequisites
-
-- Node.js and npm installed
-- Python 3.x installed
+- Node.js 16.x or higher
+- npm 7.x or higher
 - Firebase account (for Firebase integration)
 - Claude API key
 
-### Installation
+## 🛠️ Installation
 
 1. Clone the repository:
 ```bash
@@ -30,36 +28,96 @@ cd claude-api-integrations
 npm install
 ```
 
-3. Configure environment variables:
-- Create a `.env` file with your API keys and configuration
-- See `.env.example` for required variables
+3. Set up environment variables:
+```bash
+cp .env.example .env
+# Edit .env with your credentials
+```
 
-## Firebase Integration
+4. Build all packages:
+```bash
+npm run build
+```
 
-The Firebase integration module (`firebase_integration.py`) allows you to:
-- Store Claude API responses in Firebase
-- Manage user authentication
-- Handle real-time updates
+## 📦 Packages
 
-See the [Firebase Integration Guide](./docs/firebase-integration.md) for detailed setup and usage instructions.
+### Firebase Integration
 
-## Job Assist App
+Integrate Claude API with Firebase for data persistence and real-time updates.
 
-The job assistance application helps users with:
-- Resume analysis
-- Job description matching
-- Interview preparation
+```bash
+cd packages/firebase-integration
+npm install
+npm run build
+```
 
-Documentation for the job assist app can be found in the [job-assist-app directory](./job-assist-app/README.md).
+[Read Firebase Integration Documentation](./packages/firebase-integration/README.md)
 
-## Contributing
+### Job Assistant
+
+AI-powered tools for job applications and career development.
+
+```bash
+cd packages/job-assist-app
+npm install
+npm run build
+```
+
+[Read Job Assistant Documentation](./packages/job-assist-app/README.md)
+
+### Extensions
+
+Utility functions and helpers for Claude API integration.
+
+```bash
+cd packages/extensions
+npm install
+npm run build
+```
+
+[Read Extensions Documentation](./packages/extensions/README.md)
+
+## 🧪 Testing
+
+Run tests across all packages:
+```bash
+npm test
+```
+
+Run tests for a specific package:
+```bash
+cd packages/<package-name>
+npm test
+```
+
+## 🤝 Contributing
 
 1. Fork the repository
-2. Create your feature branch: `git checkout -b feature/my-new-feature`
-3. Commit your changes: `git commit -am 'Add some feature'`
-4. Push to the branch: `git push origin feature/my-new-feature`
-5. Submit a pull request
+2. Create your feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m 'Add amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
 
-## License
+Please read our [Contributing Guide](./CONTRIBUTING.md) for details on our development process and coding standards.
+
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🔒 Security
+
+For security concerns, please review our [Security Policy](./SECURITY.md).
+
+## 📚 Documentation
+
+- [API Reference](./docs/api/README.md)
+- [Firebase Integration Guide](./docs/firebase-integration/README.md)
+- [Job Assistant Guide](./docs/job-assist-app/README.md)
+- [Extensions Guide](./docs/extensions/README.md)
+
+## 🆘 Support
+
+If you need help or have questions:
+- Open an issue
+- Check existing documentation
+- Review closed issues for similar problems
