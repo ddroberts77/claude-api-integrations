@@ -1,0 +1,73 @@
+name: Daily Project Tasks
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Run daily at midnight
+  workflow_dispatch:     # Allow manual trigger
+
+jobs:
+  update-documentation:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Update documentation
+      run: |
+        npm install
+        npm run docs:generate
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add docs/
+        git diff-index --quiet HEAD || git commit -m "Auto-update documentation"
+        git push
+
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run tests and coverage
+      run: |
+        npm install
+        npm test
+        npm run coverage
+
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run security scanning
+      run: |
+        npm audit
+        npm run security-scan
+
+  performance-check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Check performance metrics
+      run: npm run perf-check
+
+  create-daily-report:
+    needs: [update-documentation, run-tests, security-scan, performance-check]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Generate daily report
+      run: |
+        echo "Daily Project Status Report" > report.md
+        echo "Date: $(date)" >> report.md
+        echo "\nTest Results:" >> report.md
+        cat test-results.json >> report.md
+        echo "\nSecurity Scan:" >> report.md
+        cat security-report.json >> report.md
+    - name: Create issue
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const report = fs.readFileSync('report.md', 'utf8');
+          await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: `Daily Status Report - ${new Date().toISOString().split('T')[0]}`,
+            body: report
+          });
