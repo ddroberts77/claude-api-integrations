@@ -1,0 +1,7 @@
+name: 'Basic Checks'
+description: 'Runs basic repository checks'
+runs:
+  using: 'composite'
+  steps:
+    - run: echo "Running basic checks"
+      shell: bash
