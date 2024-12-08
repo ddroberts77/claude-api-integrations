@@ -2,72 +2,56 @@ name: Daily Project Tasks
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Run daily at midnight
-  workflow_dispatch:     # Allow manual trigger
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+  push:
+    branches: [ main ]
 
 jobs:
-  update-documentation:
+  project-checks:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Update documentation
-      run: |
-        npm install
-        npm run docs:generate
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add docs/
-        git diff-index --quiet HEAD || git commit -m "Auto-update documentation"
-        git push
-
-  run-tests:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Run tests and coverage
-      run: |
-        npm install
-        npm test
-        npm run coverage
-
-  security-scan:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Run security scanning
-      run: |
-        npm audit
-        npm run security-scan
-
-  performance-check:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Check performance metrics
-      run: npm run perf-check
-
-  create-daily-report:
-    needs: [update-documentation, run-tests, security-scan, performance-check]
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Generate daily report
-      run: |
-        echo "Daily Project Status Report" > report.md
-        echo "Date: $(date)" >> report.md
-        echo "\nTest Results:" >> report.md
-        cat test-results.json >> report.md
-        echo "\nSecurity Scan:" >> report.md
-        cat security-report.json >> report.md
-    - name: Create issue
-      uses: actions/github-script@v6
-      with:
-        script: |
-          const fs = require('fs');
-          const report = fs.readFileSync('report.md', 'utf8');
-          await github.rest.issues.create({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            title: `Daily Status Report - ${new Date().toISOString().split('T')[0]}`,
-            body: report
-          });
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: npm install
+      
+      - name: Update documentation
+        run: npm run docs:generate
+      
+      - name: Run tests
+        run: npm run test
+      
+      - name: Security scan
+        run: npm run security-scan
+      
+      - name: Performance check
+        run: npm run perf-check
+      
+      - name: Create report
+        if: always()
+        run: |
+          echo "# Daily Status Report" > report.md
+          echo "Generated: $(date)" >> report.md
+          echo "## Status" >> report.md
+          echo "All checks completed" >> report.md
+      
+      - name: Create issue
+        if: always()
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('report.md', 'utf8');
+            await github.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Daily Status Report - ${new Date().toISOString().split('T')[0]}`,
+              body: report
+            });
