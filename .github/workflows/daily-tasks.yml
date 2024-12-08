@@ -1,31 +1,33 @@
-name: Daily Tasks
+name: 'Daily Tasks'
 
 on:
   workflow_dispatch:
 
-defaults:
-  run:
-    shell: bash
-
 jobs:
-  daily-checks:
+  checks:
+    name: 'Basic Checks'
     runs-on: ubuntu-latest
-    continue-on-error: true
+    outputs:
+      result: ${{ steps.all-checks.outputs.result }}
     steps:
-      - name: Check A
-        continue-on-error: true
+      - name: Initial Check
+        id: all-checks
         run: |
-          echo "Running check A"
+          echo "result=success" >> "$GITHUB_OUTPUT"
           exit 0
-
-      - name: Check B
-        continue-on-error: true
-        run: |
-          echo "Running check B"
-          exit 0
-
-      - name: Check C
-        continue-on-error: true
-        run: |
-          echo "Running check C"
-          exit 0
+      
+      - name: Documentation
+        if: success()
+        run: echo "Documentation step"
+      
+      - name: Tests
+        if: success()
+        run: echo "Test step"
+      
+      - name: Security
+        if: success()
+        run: echo "Security step"
+      
+      - name: Performance
+        if: success()
+        run: echo "Performance step"
