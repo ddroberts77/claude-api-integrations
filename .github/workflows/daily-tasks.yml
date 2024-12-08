@@ -2,39 +2,10 @@ name: Daily Project Tasks
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ main ]
 
 jobs:
   checks:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Basic Checks
-        run: |
-          mkdir -p temp
-          echo "All checks passed" > temp/results.txt
-        shell: bash
-        
-      - name: Create Report
-        run: |
-          echo "# Daily Status Report" > report.md
-          echo "Generated: $(date)" >> report.md
-          cat temp/results.txt >> report.md
-        shell: bash
-        
-      - name: Create Issue
-        if: success()
-        uses: actions/github-script@v3
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            const fs = require('fs');
-            const report = fs.readFileSync('report.md', 'utf8');
-            await github.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: `Daily Status Report - ${new Date().toISOString().split('T')[0]}`,
-              body: report
-            });
+      - name: Basic Check
+        run: exit 0
