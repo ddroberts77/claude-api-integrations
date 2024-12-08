@@ -2,37 +2,81 @@ name: Daily Tasks
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'  # Run daily at midnight
 
 permissions:
   contents: write
   issues: write
 
 jobs:
-  checks:
+  daily-checks:
     runs-on: ubuntu-22.04
+    env:
+      CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+      
     steps:
       - uses: actions/checkout@v3
       
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
       - name: update-documentation
         run: |
-          mkdir -p docs
-          echo "Documentation updated" > docs/status.txt
-          cat docs/status.txt
+          npm run docs:generate
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add docs/
+          git diff-index --quiet HEAD || git commit -m "Auto-update documentation"
+          git push
       
       - name: run-tests
         run: |
-          mkdir -p tests
-          echo "Tests completed" > tests/results.txt
-          cat tests/results.txt
-      
+          npm test
+          
       - name: security-scan
         run: |
-          mkdir -p security
-          echo "Security scan completed" > security/scan.txt
-          cat security/scan.txt
-      
+          npm run security-scan
+          
       - name: performance-check
         run: |
-          mkdir -p performance
-          echo "Performance check completed" > performance/metrics.txt
-          cat performance/metrics.txt
+          npm run perf-check > performance-report.json
+      
+      - name: Create Status Report
+        if: always()
+        run: |
+          echo "# Daily Integration Status Report" > report.md
+          echo "Generated: $(date)" >> report.md
+          
+          echo "\n## Documentation" >> report.md
+          echo "Documentation has been updated and pushed to the repository." >> report.md
+          
+          echo "\n## Test Results" >> report.md
+          echo "See Jest test output above for details." >> report.md
+          
+          echo "\n## Security Scan" >> report.md
+          echo "Security scan completed. See output above for any vulnerabilities." >> report.md
+          
+          echo "\n## Performance Metrics" >> report.md
+          cat performance-report.json >> report.md
+      
+      - name: Create Issue
+        if: always()
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('report.md', 'utf8');
+            await github.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Daily Integration Status Report - ${new Date().toISOString().split('T')[0]}`,
+              body: report
+            });
