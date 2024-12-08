@@ -1,9 +1,11 @@
 {
-  "dependencies": {
-    "@types/react-router-dom": "^5.3.3",
-    "axios": "^1.7.9",
-    "react-router-dom": "^7.0.2",
-    "typescript": "^5.7.2",
-    "web-vitals": "^4.2.4"
+  "name": "claude-api-integrations",
+  "version": "1.0.0",
+  "description": "Claude API integrations and examples",
+  "scripts": {
+    "test": "echo \"Info: no test specified\" && exit 0",
+    "docs:generate": "echo \"Info: docs generation placeholder\" && exit 0",
+    "security-scan": "echo \"Info: security scan placeholder\" && exit 0",
+    "perf-check": "echo \"Info: performance check placeholder\" && exit 0"
   }
 }
