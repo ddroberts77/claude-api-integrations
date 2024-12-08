@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  check:
-    runs-on: ubuntu-22.04
+  basic-check:
+    runs-on: ubuntu-22.04  # Explicitly use 22.04 instead of latest
     steps:
-      - name: Run Tasks
+      - name: Basic Task
         run: |
-          echo "Running all tasks"
-          echo "All tasks completed successfully"
-        shell: bash
+          mkdir -p reports
+          echo "Basic check completed successfully" > reports/result.txt
+          cat reports/result.txt
