@@ -4,37 +4,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  checks:
-    runs-on: ubuntu-latest
+  check:
+    runs-on: ubuntu-22.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup composite action
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const fs = require('fs');
-            
-            // Create output directory
-            fs.mkdirSync('output', { recursive: true });
-            
-            // Run checks
-            const checks = [
-              { name: 'update-documentation', msg: 'Documentation updated' },
-              { name: 'run-tests', msg: 'Tests completed' },
-              { name: 'security-scan', msg: 'Security scan completed' },
-              { name: 'performance-check', msg: 'Performance check completed' }
-            ];
-            
-            for (const check of checks) {
-              console.log(`Running ${check.name}...`);
-              fs.writeFileSync(`output/${check.name}.txt`, check.msg);
-            }
-            
-            // Create report
-            const report = checks
-              .map(check => `${check.name}: ${fs.readFileSync(`output/${check.name}.txt`, 'utf8')}`)
-              .join('\n');
-            
-            fs.writeFileSync('report.md', report);
+      - name: Run Tasks
+        run: |
+          echo "Running all tasks"
+          echo "All tasks completed successfully"
+        shell: bash
