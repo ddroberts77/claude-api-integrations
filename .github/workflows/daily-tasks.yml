@@ -12,6 +12,8 @@ permissions:
 jobs:
   daily-checks:
     runs-on: ubuntu-22.04
+    env:
+      CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
     steps:
       - uses: actions/checkout@v3
       
@@ -25,26 +27,30 @@ jobs:
         run: npm install
       
       - name: update-documentation
+        id: docs
         run: |
           npm run docs:generate
-          echo "Documentation updated"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add docs/
+          git diff-index --quiet HEAD || git commit -m "Auto-update documentation"
+          git push || echo "No documentation changes to push"
         continue-on-error: true
       
       - name: run-tests
-        run: |
-          npm test
-          echo "Tests completed"
+        id: tests
+        run: npm run test:coverage
         continue-on-error: true
       
       - name: security-scan
-        run: |
-          npm run security-scan
-          echo "Security scan completed"
+        id: security
+        run: npm run security-scan
         continue-on-error: true
       
       - name: performance-check
+        id: performance
         run: |
-          npm run perf-check
+          npm run perf-check > perf-results.json
           echo "Performance check completed"
         continue-on-error: true
       
@@ -53,8 +59,35 @@ jobs:
         run: |
           echo "# Daily Integration Status Report" > report.md
           echo "Generated: $(date)" >> report.md
-          echo "\n## Status" >> report.md
-          echo "All checks completed" >> report.md
+          
+          echo "\n## Documentation Status" >> report.md
+          if [ "${{ steps.docs.outcome }}" == "success" ]; then
+            echo "✅ Documentation updated successfully" >> report.md
+          else
+            echo "⚠️ Documentation update completed with warnings" >> report.md
+          fi
+          
+          echo "\n## Test Results" >> report.md
+          if [ "${{ steps.tests.outcome }}" == "success" ]; then
+            echo "✅ All tests passed" >> report.md
+          else
+            echo "⚠️ Some tests need attention" >> report.md
+          fi
+          
+          echo "\n## Security Status" >> report.md
+          if [ "${{ steps.security.outcome }}" == "success" ]; then
+            echo "✅ Security checks passed" >> report.md
+          else
+            echo "⚠️ Security scan completed with warnings" >> report.md
+          fi
+          
+          echo "\n## Performance Metrics" >> report.md
+          if [ -f perf-results.json ]; then
+            echo "Performance test results:" >> report.md
+            cat perf-results.json >> report.md
+          else
+            echo "⚠️ Performance metrics not available" >> report.md
+          fi
       
       - name: Create Issue
         if: always()
