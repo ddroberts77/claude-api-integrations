@@ -5,44 +5,9 @@ on:
 
 jobs:
   checks:
-    name: 'Project Checks'
     runs-on: ubuntu-latest
-    env:
-      CI: false
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      - name: Create directories
-        run: |
-          mkdir -p docs tests reports security performance
-
-      - name: update-documentation
-        id: docs
-        run: echo "Documentation check complete" > docs/output.txt
-
-      - name: run-tests
-        id: tests
-        run: echo "Tests executed successfully" > tests/output.txt
-
-      - name: security-scan
-        id: security
-        run: echo "Security scan complete" > security/output.txt
-
-      - name: performance-check
-        id: performance
-        run: echo "Performance check complete" > performance/output.txt
-
-      - name: Report
-        if: always()
-        run: |
-          echo "Check Results:" > report.md
-          echo "Documentation: $(cat docs/output.txt)" >> report.md
-          echo "Tests: $(cat tests/output.txt)" >> report.md
-          echo "Security: $(cat security/output.txt)" >> report.md
-          echo "Performance: $(cat performance/output.txt)" >> report.md
+      - name: Run all checks
+        run: bash ./scripts/run-checks.sh
