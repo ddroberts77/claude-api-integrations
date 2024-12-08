@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "Claude API integrations and examples",
   "scripts": {
-    "test": "true",
-    "docs:generate": "true",
-    "security-scan": "true",
-    "perf-check": "true"
+    "test": "node -e 'process.exit(0)'",
+    "docs:generate": "node -e 'process.exit(0)'",
+    "security-scan": "node -e 'process.exit(0)'",
+    "perf-check": "node -e 'process.exit(0)'"
   },
   "dependencies": {
     "axios": "^1.6.2"
